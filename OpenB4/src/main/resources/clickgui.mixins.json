@@ -19,6 +19,17 @@
     "MixinEntityPlayer",
     "MixinMinecraft",
     "MixinItemRenderer",
-    "MixinRenderPlayer"
+    "MixinRenderPlayer",
+    "MixinBlock",
+    "MixinBlockModelRenderer",
+    "MixinBlockRendererDispatcher",
+    "MixinWorldRenderer",
+    "MixinVisGraph",
+    "MixinBlockLadder",
+    "MixinBlockLeaves",
+    "MixinBlockBush",
+    "MixinBlockGrass",
+    "MixinBlockWeb",
+    "MixinBlockPane"
   ]
 }

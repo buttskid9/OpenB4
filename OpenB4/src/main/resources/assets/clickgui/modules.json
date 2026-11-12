@@ -5857,42 +5857,69 @@
   "failed": null,
   "settings": [
    {
+    "t": "mode",
+    "name": "Mode",
+    "prefix": "",
+    "suffix": "",
+    "value": 1.0,
+    "min": 0.0,
+    "max": 1.0,
+    "step": 1.0,
+    "options": [
+     "Soft",
+     "Full"
+    ],
+    "labels": null
+   },
+   {
+    "t": "slider",
+    "name": "Opacity",
+    "prefix": "",
+    "suffix": "%",
+    "value": 50.0,
+    "min": 0.0,
+    "max": 100.0,
+    "step": 5.0,
+    "options": null,
+    "labels": null
+   },
+   {
     "t": "slider",
     "name": "Range",
     "prefix": "",
-    "suffix": "",
-    "value": 80.0,
-    "min": 4.0,
-    "max": 200.0,
-    "step": 4.0,
+    "suffix": " blocks",
+    "value": 64.0,
+    "min": 16.0,
+    "max": 512.0,
+    "step": 16.0,
     "options": null,
     "labels": null
+   },
+   {
+    "t": "toggle",
+    "name": "Caves only",
+    "value": false
    },
    {
     "t": "slider",
-    "name": "Rate",
+    "name": "Cave radius",
     "prefix": "",
-    "suffix": " seconds",
-    "value": 0.4,
-    "min": 0.2,
-    "max": 5.0,
-    "step": 0.2,
+    "suffix": "",
+    "value": 2.0,
+    "min": 1.0,
+    "max": 2.0,
+    "step": 1.0,
     "options": null,
     "labels": null
    },
    {
     "t": "toggle",
-    "name": "Coal",
+    "name": "Diamonds",
     "value": true
    },
    {
     "t": "toggle",
-    "name": "Diamond",
-    "value": true
-   },
-   {
-    "t": "toggle",
-    "name": "Emerald",
+    "name": "Diamond tracers",
     "value": true
    },
    {
@@ -5902,28 +5929,88 @@
    },
    {
     "t": "toggle",
+    "name": "Gold tracers",
+    "value": true
+   },
+   {
+    "t": "toggle",
     "name": "Iron",
-    "value": true
+    "value": false
    },
    {
     "t": "toggle",
-    "name": "Lapis",
-    "value": true
+    "name": "Iron tracers",
+    "value": false
    },
    {
     "t": "toggle",
-    "name": "Obsidian",
-    "value": true
+    "name": "Coal",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Coal tracers",
+    "value": false
    },
    {
     "t": "toggle",
     "name": "Redstone",
-    "value": true
+    "value": false
    },
    {
     "t": "toggle",
-    "name": "Spawner",
-    "value": true
+    "name": "Redstone tracers",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Lapis",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Lapis tracers",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Emeralds",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Emerald tracers",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Spawners",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Spawner tracers",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Canes",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Cane tracers",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Warts",
+    "value": false
+   },
+   {
+    "t": "toggle",
+    "name": "Wart tracers",
+    "value": false
    }
   ]
  },
