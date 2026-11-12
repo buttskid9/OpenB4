@@ -5721,6 +5721,18 @@
     "labels": null
    },
    {
+    "t": "slider",
+    "name": "ESP opacity",
+    "prefix": "",
+    "suffix": "%",
+    "value": 50.0,
+    "min": 10.0,
+    "max": 100.0,
+    "step": 5.0,
+    "options": null,
+    "labels": null
+   },
+   {
     "t": "toggle",
     "name": "Show difference",
     "value": false
@@ -6055,6 +6067,70 @@
    {
     "t": "toggle",
     "name": "Wart tracers",
+    "value": false
+   }
+  ]
+ },
+ {
+  "cls": "InfoDisplay",
+  "name": "Info Display",
+  "category": "render",
+  "enabled": false,
+  "noToggle": false,
+  "hidden": false,
+  "key": 0,
+  "lite": false,
+  "failed": null,
+  "settings": [
+   {
+    "t": "mode",
+    "name": "Rank",
+    "prefix": "",
+    "suffix": "",
+    "value": 0.0,
+    "min": 0.0,
+    "max": 5.0,
+    "step": 1.0,
+    "options": [
+     "Owner",
+     "Admin",
+     "Developer",
+     "Moderator",
+     "Youtuber",
+     "Member"
+    ],
+    "labels": null
+   },
+   {
+    "t": "mode",
+    "name": "Font",
+    "prefix": "",
+    "suffix": "",
+    "value": 1.0,
+    "min": 0.0,
+    "max": 1.0,
+    "step": 1.0,
+    "options": [
+     "Minecraft",
+     "Baloo"
+    ],
+    "labels": null
+   },
+   {
+    "t": "slider",
+    "name": "Scale",
+    "prefix": "",
+    "suffix": "x",
+    "value": 1.2,
+    "min": 0.5,
+    "max": 3.0,
+    "step": 0.1,
+    "options": null,
+    "labels": null
+   },
+   {
+    "t": "toggle",
+    "name": "Theme color",
     "value": false
    }
   ]
