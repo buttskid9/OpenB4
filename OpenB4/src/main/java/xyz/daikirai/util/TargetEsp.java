@@ -9,8 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 /**
  * Visual markers drawn on the current target: a spinning pyramid above the head, a flat disc above
- * the head, and a filled box. They are drawn through walls and turn red while the target is
- * flashing from a hit. Render-only: this class reads the entity's position and does nothing else.
+ * the head, and a solid box that wraps the whole body. They are drawn through walls, in blue, and
+ * turn red while the target is flashing from a hit. Render-only: this class reads the entity's
+ * position and does nothing else.
  */
 public final class TargetEsp {
 
@@ -18,13 +19,17 @@ public final class TargetEsp {
     public static final int DISC = 2;
     public static final int FILLED_BOX = 3;
 
-    private static final int HIT_RGB = 0xFF3030;
+    private static final int NORMAL_RGB = 0x0099FF;
+    private static final int HIT_RGB = 0xFF0000;
 
     private TargetEsp() {
     }
 
-    /** Draws one marker. Call from RenderWorldLastEvent. rgb is the normal colour (alpha ignored). */
-    public static void draw(Entity entity, int mode, int rgb, float partialTicks) {
+    /**
+     * Draws one marker. Call from RenderWorldLastEvent. opacity (0 to 1) is how solid the filled
+     * parts are; the pyramid and disc also get a thin outline, the box does not.
+     */
+    public static void draw(Entity entity, int mode, float opacity, float partialTicks) {
         Minecraft mc = Minecraft.getMinecraft();
         RenderManager rm = mc.getRenderManager();
 
@@ -33,10 +38,11 @@ public final class TargetEsp {
         double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - rm.viewerPosZ;
 
         boolean hit = entity instanceof EntityLivingBase && ((EntityLivingBase) entity).hurtTime > 0;
-        int color = (hit ? HIT_RGB : rgb) & 0xFFFFFF;
+        int color = hit ? HIT_RGB : NORMAL_RGB;
         float r = (color >> 16 & 0xFF) / 255.0f;
         float g = (color >> 8 & 0xFF) / 255.0f;
         float b = (color & 0xFF) / 255.0f;
+        float a = Math.max(0.05f, Math.min(1.0f, opacity));
 
         boolean blend = GL11.glIsEnabled(3042);
         boolean depth = GL11.glIsEnabled(2929);
@@ -60,13 +66,15 @@ public final class TargetEsp {
                 long t = System.currentTimeMillis();
                 double bob = Math.sin((t % 100000L) / 333.0) / 10.0;
                 double spin = (t % 3000L) / 3000.0 * Math.PI * 2.0;
-                pyramid(x, y + entity.height + 0.25 + bob, z, spin, r, g, b);
+                pyramid(x, y + entity.height + 0.25 + bob, z, spin, r, g, b, a);
             } else if (mode == DISC) {
                 double radius = Math.max(0.3, entity.width / 1.5);
-                disc(x, y + entity.height + 0.25, z, radius, 0.1, r, g, b);
+                disc(x, y + entity.height + 0.25, z, radius, 0.1, r, g, b, a);
             } else if (mode == FILLED_BOX) {
-                double half = entity.width / 2.0 + 0.1;
-                box(x - half, y - 0.05, z - half, x + half, y + entity.height + 0.15, z + half, r, g, b);
+                // Wider and taller than the body so it fully wraps the player: width / 1.2 out from
+                // the centre (0.5 for a player) and 0.2 taller than the entity.
+                double half = entity.width / 1.2;
+                box(x - half, y, z - half, x + half, y + entity.height + 0.2, z + half, r, g, b, a);
             }
         } finally {
             GL11.glDepthMask(depthMask);
@@ -91,15 +99,15 @@ public final class TargetEsp {
     }
 
     /** A three-sided pyramid pointing down at the head, turning slowly. */
-    private static void pyramid(double cx, double cy, double cz, double spin, float r, float g, float b) {
+    private static void pyramid(double cx, double cy, double cz, double spin, float r, float g, float b, float a) {
         double radius = 0.22;
         double height = 0.4;
         double[][] base = new double[3][];
         for (int i = 0; i < 3; i++) {
-            double a = spin + i * (Math.PI * 2.0 / 3.0);
-            base[i] = new double[]{cx + Math.cos(a) * radius, cy + height, cz + Math.sin(a) * radius};
+            double ang = spin + i * (Math.PI * 2.0 / 3.0);
+            base[i] = new double[]{cx + Math.cos(ang) * radius, cy + height, cz + Math.sin(ang) * radius};
         }
-        GL11.glColor4f(r, g, b, 0.42f);
+        GL11.glColor4f(r, g, b, a);
         GL11.glBegin(GL11.GL_TRIANGLES);
         for (int i = 0; i < 3; i++) {
             double[] p = base[i];
@@ -127,22 +135,22 @@ public final class TargetEsp {
     }
 
     /** A flat, round disc hovering above the head. */
-    private static void disc(double cx, double cy, double cz, double radius, double thickness, float r, float g, float b) {
+    private static void disc(double cx, double cy, double cz, double radius, double thickness, float r, float g, float b, float a) {
         int segments = 36;
         double top = cy + thickness;
-        GL11.glColor4f(r, g, b, 0.40f);
+        GL11.glColor4f(r, g, b, a);
         GL11.glBegin(GL11.GL_TRIANGLE_FAN);
         GL11.glVertex3d(cx, top, cz);
         for (int i = 0; i <= segments; i++) {
-            double a = i * (Math.PI * 2.0 / segments);
-            GL11.glVertex3d(cx + Math.cos(a) * radius, top, cz + Math.sin(a) * radius);
+            double ang = i * (Math.PI * 2.0 / segments);
+            GL11.glVertex3d(cx + Math.cos(ang) * radius, top, cz + Math.sin(ang) * radius);
         }
         GL11.glEnd();
         GL11.glBegin(GL11.GL_QUAD_STRIP);
         for (int i = 0; i <= segments; i++) {
-            double a = i * (Math.PI * 2.0 / segments);
-            double px = cx + Math.cos(a) * radius;
-            double pz = cz + Math.sin(a) * radius;
+            double ang = i * (Math.PI * 2.0 / segments);
+            double px = cx + Math.cos(ang) * radius;
+            double pz = cz + Math.sin(ang) * radius;
             GL11.glVertex3d(px, top, pz);
             GL11.glVertex3d(px, cy, pz);
         }
@@ -153,16 +161,16 @@ public final class TargetEsp {
             double yy = ring == 0 ? cy : top;
             GL11.glBegin(GL11.GL_LINE_LOOP);
             for (int i = 0; i < segments; i++) {
-                double a = i * (Math.PI * 2.0 / segments);
-                GL11.glVertex3d(cx + Math.cos(a) * radius, yy, cz + Math.sin(a) * radius);
+                double ang = i * (Math.PI * 2.0 / segments);
+                GL11.glVertex3d(cx + Math.cos(ang) * radius, yy, cz + Math.sin(ang) * radius);
             }
             GL11.glEnd();
         }
     }
 
-    /** A translucent box with an outline, around the whole body. */
-    private static void box(double x1, double y1, double z1, double x2, double y2, double z2, float r, float g, float b) {
-        GL11.glColor4f(r, g, b, 0.30f);
+    /** A solid, borderless box: six translucent faces and no outline. */
+    private static void box(double x1, double y1, double z1, double x2, double y2, double z2, float r, float g, float b, float a) {
+        GL11.glColor4f(r, g, b, a);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex3d(x1, y1, z1); GL11.glVertex3d(x2, y1, z1); GL11.glVertex3d(x2, y1, z2); GL11.glVertex3d(x1, y1, z2);
         GL11.glVertex3d(x1, y2, z1); GL11.glVertex3d(x1, y2, z2); GL11.glVertex3d(x2, y2, z2); GL11.glVertex3d(x2, y2, z1);
@@ -170,22 +178,6 @@ public final class TargetEsp {
         GL11.glVertex3d(x1, y1, z2); GL11.glVertex3d(x2, y1, z2); GL11.glVertex3d(x2, y2, z2); GL11.glVertex3d(x1, y2, z2);
         GL11.glVertex3d(x1, y1, z1); GL11.glVertex3d(x1, y1, z2); GL11.glVertex3d(x1, y2, z2); GL11.glVertex3d(x1, y2, z1);
         GL11.glVertex3d(x2, y1, z1); GL11.glVertex3d(x2, y2, z1); GL11.glVertex3d(x2, y2, z2); GL11.glVertex3d(x2, y1, z2);
-        GL11.glEnd();
-
-        GL11.glColor4f(r, g, b, 1.0f);
-        GL11.glBegin(GL11.GL_LINES);
-        GL11.glVertex3d(x1, y1, z1); GL11.glVertex3d(x2, y1, z1);
-        GL11.glVertex3d(x2, y1, z1); GL11.glVertex3d(x2, y1, z2);
-        GL11.glVertex3d(x2, y1, z2); GL11.glVertex3d(x1, y1, z2);
-        GL11.glVertex3d(x1, y1, z2); GL11.glVertex3d(x1, y1, z1);
-        GL11.glVertex3d(x1, y2, z1); GL11.glVertex3d(x2, y2, z1);
-        GL11.glVertex3d(x2, y2, z1); GL11.glVertex3d(x2, y2, z2);
-        GL11.glVertex3d(x2, y2, z2); GL11.glVertex3d(x1, y2, z2);
-        GL11.glVertex3d(x1, y2, z2); GL11.glVertex3d(x1, y2, z1);
-        GL11.glVertex3d(x1, y1, z1); GL11.glVertex3d(x1, y2, z1);
-        GL11.glVertex3d(x2, y1, z1); GL11.glVertex3d(x2, y2, z1);
-        GL11.glVertex3d(x2, y1, z2); GL11.glVertex3d(x2, y2, z2);
-        GL11.glVertex3d(x1, y1, z2); GL11.glVertex3d(x1, y2, z2);
         GL11.glEnd();
     }
 }
