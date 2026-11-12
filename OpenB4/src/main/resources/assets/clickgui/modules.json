@@ -5704,6 +5704,23 @@
     "value": false
    },
    {
+    "t": "mode",
+    "name": "ESP mode",
+    "prefix": "",
+    "suffix": "",
+    "value": 0.0,
+    "min": 0.0,
+    "max": 3.0,
+    "step": 1.0,
+    "options": [
+     "Box",
+     "Pyramid",
+     "Disc",
+     "Filled box"
+    ],
+    "labels": null
+   },
+   {
     "t": "toggle",
     "name": "Show difference",
     "value": false
