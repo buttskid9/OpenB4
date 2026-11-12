@@ -36,7 +36,7 @@ public class TargetHudModule extends Module {
 
     private static final int TEXT = new Color(220, 220, 220, 255).getRGB();
 
-    public static SliderSetting modeSetting, themeSetting;
+    public static SliderSetting modeSetting, themeSetting, espModeSetting;
     public static ButtonSetting editPosition, renderEsp, showDifference, showHealth, showWinLoss, traditionalHealthColor;
     public static Mode mode = Mode.Modern;
     public static Theme theme = Theme.DEFAULT;
@@ -55,6 +55,7 @@ public class TargetHudModule extends Module {
         themeSetting = (SliderSetting) ModuleManager.setting(this, "Theme");
         editPosition = (ButtonSetting) ModuleManager.setting(this, "Edit position");
         renderEsp = (ButtonSetting) ModuleManager.setting(this, "Render ESP");
+        espModeSetting = (SliderSetting) ModuleManager.setting(this, "ESP mode");
         showDifference = (ButtonSetting) ModuleManager.setting(this, "Show difference");
         showHealth = (ButtonSetting) ModuleManager.setting(this, "Show health");
         showWinLoss = (ButtonSetting) ModuleManager.setting(this, "Show win/loss");
@@ -253,7 +254,13 @@ public class TargetHudModule extends Module {
             return;
         }
         if (xyz.daikirai.module.combat.KillAuraModule.target != null) {
-            xyz.daikirai.util.Render3D.entityBox(xyz.daikirai.module.combat.KillAuraModule.target.entity, 2, theme.getRGB(0.0), e.partialTicks);
+            net.minecraft.entity.Entity entity = xyz.daikirai.module.combat.KillAuraModule.target.entity;
+            int espMode = (int) espModeSetting.getInput();
+            if (espMode == 0) {
+                xyz.daikirai.util.Render3D.entityBox(entity, 2, theme.getRGB(0.0), e.partialTicks);
+            } else {
+                xyz.daikirai.util.TargetEsp.draw(entity, espMode, theme.getRGB(0.0), e.partialTicks);
+            }
         }
     }
 }
