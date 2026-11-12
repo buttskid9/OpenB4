@@ -5059,6 +5059,34 @@
     "labels": null
    },
    {
+    "t": "mode",
+    "name": "Font",
+    "prefix": "",
+    "suffix": "",
+    "value": 0.0,
+    "min": 0.0,
+    "max": 2.0,
+    "step": 1.0,
+    "options": [
+     "Minecraft",
+     "Tahoma",
+     "Baloo"
+    ],
+    "labels": null
+   },
+   {
+    "t": "slider",
+    "name": "Baloo size",
+    "prefix": "",
+    "suffix": " px",
+    "value": 10.0,
+    "min": 8.0,
+    "max": 16.0,
+    "step": 1.0,
+    "options": null,
+    "labels": null
+   },
+   {
     "t": "button",
     "name": "Edit position",
     "value": false
