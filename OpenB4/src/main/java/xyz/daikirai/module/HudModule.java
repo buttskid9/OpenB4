@@ -5,6 +5,8 @@ import xyz.daikirai.gui.HudPositionEditor;
 import xyz.daikirai.module.setting.ButtonSetting;
 import xyz.daikirai.module.setting.SliderSetting;
 import xyz.daikirai.util.RenderUtils;
+import xyz.daikirai.util.HudFont;
+import xyz.daikirai.util.TahomaFont;
 import xyz.daikirai.util.Theme;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,7 +46,7 @@ public class HudModule extends Module {
     public static int fontHeight;
     public static int lineHeight;
 
-    public static SliderSetting outlineSetting, scale, themeSetting;
+    public static SliderSetting outlineSetting, scale, themeSetting, fontSetting, fontSizeSetting;
     public static ButtonSetting editPosition, alignRight, alphabeticalSort, animate, drawBackground, lowercase, removeClosetModules,
             removeRenderModules, removeScripts, showModuleInfo;
 
@@ -58,6 +60,8 @@ public class HudModule extends Module {
         outlineSetting = (SliderSetting) ModuleManager.setting(this, "Outline");
         scale = (SliderSetting) ModuleManager.setting(this, "Scale");
         themeSetting = (SliderSetting) ModuleManager.setting(this, "Theme");
+        fontSetting = (SliderSetting) ModuleManager.setting(this, "Font");
+        fontSizeSetting = (SliderSetting) ModuleManager.setting(this, "Baloo size");
         editPosition = (ButtonSetting) ModuleManager.setting(this, "Edit position");
         alignRight = (ButtonSetting) ModuleManager.setting(this, "Align right");
         alphabeticalSort = (ButtonSetting) ModuleManager.setting(this, "Alphabetical sort");
@@ -68,6 +72,46 @@ public class HudModule extends Module {
         removeRenderModules = (ButtonSetting) ModuleManager.setting(this, "Remove render modules");
         removeScripts = (ButtonSetting) ModuleManager.setting(this, "Remove scripts");
         showModuleInfo = (ButtonSetting) ModuleManager.setting(this, "Show module info");
+    }
+
+    /** True when the Font setting is Tahoma and the font could be built. */
+    private static boolean tahoma() {
+        return fontSetting != null && (int) fontSetting.getInput() == 1 && TahomaFont.ready();
+    }
+
+    /** True when the Font setting is Baloo and its font file was found. */
+    private static boolean baloo() {
+        return fontSetting != null && (int) fontSetting.getInput() == 2 && HudFont.available();
+    }
+
+    private static float textWidth(String s) {
+        if (baloo()) {
+            HudFont.setSize((float) fontSizeSetting.getInput());
+            return HudFont.width(s);
+        }
+        return tahoma() ? TahomaFont.width(s) : (float) mc.fontRendererObj.getStringWidth(s);
+    }
+
+    private static void drawText(String s, float x, float y, int color) {
+        if (baloo()) {
+            HudFont.draw(s, x, y, color);
+        } else if (tahoma()) {
+            // keep the same line layout as the Minecraft font by centring the glyphs in it
+            TahomaFont.draw(s, x, y + ((float) fontHeight - TahomaFont.height()) / 2.0f, color, true);
+        } else {
+            RenderUtils.shadowText(s, x, y, color);
+        }
+    }
+
+    /** Baloo sets its own line height so the bars fit its lettering; the other fonts use Minecraft's. */
+    private static void updateMetrics() {
+        if (baloo()) {
+            HudFont.setSize((float) fontSizeSetting.getInput());
+            fontHeight = HudFont.height();
+        } else {
+            fontHeight = mc.fontRendererObj.FONT_HEIGHT;
+        }
+        lineHeight = fontHeight + 1;
     }
 
     @Override
@@ -176,11 +220,12 @@ public class HudModule extends Module {
         if (alphabeticalSort.isToggled()) {
             ModuleManager.hudOrder.sort((a, b) -> a.getName().compareTo(b.getName()));
         } else {
-            ModuleManager.hudOrder.sort((a, b) -> mc.fontRendererObj.getStringWidth(b.getDisplayName()) - mc.fontRendererObj.getStringWidth(a.getDisplayName()));
+            ModuleManager.hudOrder.sort((a, b) -> Float.compare(textWidth(b.getDisplayName()), textWidth(a.getDisplayName())));
         }
     }
 
     public static void render() {
+        updateMetrics();
         List<Module> all = listed();
         long now = System.currentTimeMillis();
         ArrayList<Module> mods = new ArrayList<Module>();
@@ -215,7 +260,7 @@ public class HudModule extends Module {
             int alpha = (int) (a * 255.0f) & 0xFF;
             int color = RenderUtils.withAlpha(rgb, alpha);
             String s = m.getDisplayName();
-            float w = mc.fontRendererObj.getStringWidth(s);
+            float w = textWidth(s);
             float x = !alignRight.isToggled() ? x0 : x0 - w;
             float ty = y + (h - (float) fontHeight) / 2.0f;
             GlStateManager.pushMatrix();
@@ -259,7 +304,7 @@ public class HudModule extends Module {
                     }
                 }
             }
-            RenderUtils.shadowText(s, x, ty, color);
+            drawText(s, x, ty, color);
             GlStateManager.popMatrix();
             y += h;
             lastWidth = w;
