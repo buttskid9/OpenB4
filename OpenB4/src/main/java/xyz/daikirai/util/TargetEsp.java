@@ -18,6 +18,7 @@ public final class TargetEsp {
     public static final int PYRAMID = 1;
     public static final int DISC = 2;
     public static final int FILLED_BOX = 3;
+    public static final int HAT = 4;
 
     private static final int NORMAL_RGB = 0x0099FF;
     private static final int HIT_RGB = 0xFF0000;
@@ -30,6 +31,11 @@ public final class TargetEsp {
      * parts are; the pyramid and disc also get a thin outline, the box does not.
      */
     public static void draw(Entity entity, int mode, float opacity, float partialTicks) {
+        draw(entity, mode, opacity, partialTicks, -1);
+    }
+
+    /** rgbOverride is 0xRRGGBB, or -1 to use the normal blue / red-when-hit colour. */
+    public static void draw(Entity entity, int mode, float opacity, float partialTicks, int rgbOverride) {
         Minecraft mc = Minecraft.getMinecraft();
         RenderManager rm = mc.getRenderManager();
 
@@ -38,7 +44,7 @@ public final class TargetEsp {
         double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - rm.viewerPosZ;
 
         boolean hit = entity instanceof EntityLivingBase && ((EntityLivingBase) entity).hurtTime > 0;
-        int color = hit ? HIT_RGB : NORMAL_RGB;
+        int color = rgbOverride >= 0 ? rgbOverride : (hit ? HIT_RGB : NORMAL_RGB);
         float r = (color >> 16 & 0xFF) / 255.0f;
         float g = (color >> 8 & 0xFF) / 255.0f;
         float b = (color & 0xFF) / 255.0f;
@@ -70,11 +76,13 @@ public final class TargetEsp {
             } else if (mode == DISC) {
                 double radius = Math.max(0.3, entity.width / 1.5);
                 disc(x, y + entity.height + 0.25, z, radius, 0.1, r, g, b, a);
+            } else if (mode == HAT) {
+                hat(x, y + entity.height + 0.3, z, Math.max(0.4, entity.width * 0.9), r, g, b, a);
             } else if (mode == FILLED_BOX) {
                 // Wider and taller than the body so it fully wraps the player: width / 1.2 out from
                 // the centre (0.5 for a player) and 0.2 taller than the entity.
-                double half = entity.width / 1.2;
-                box(x - half, y, z - half, x + half, y + entity.height + 0.2, z + half, r, g, b, a);
+                double half = entity.width / 1.3;
+                box(x - half, y, z - half, x + half, y + entity.height + 0.12, z + half, r, g, b, a);
             }
         } finally {
             GL11.glDepthMask(depthMask);
@@ -130,6 +138,20 @@ public final class TargetEsp {
             GL11.glVertex3d(p[0], p[1], p[2]);
             GL11.glVertex3d(p[0], p[1], p[2]);
             GL11.glVertex3d(q[0], q[1], q[2]);
+        }
+        GL11.glEnd();
+    }
+
+    /** A flat, wide cone (like a lampshade) hovering above the head. Solid, no outline. */
+    private static void hat(double cx, double cy, double cz, double radius, float r, float g, float b, float a) {
+        int segments = 32;
+        double apexY = cy + 0.22;
+        GL11.glColor4f(r, g, b, a);
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glVertex3d(cx, apexY, cz);
+        for (int i = 0; i <= segments; i++) {
+            double ang = i * (Math.PI * 2.0 / segments);
+            GL11.glVertex3d(cx + Math.cos(ang) * radius, cy, cz + Math.sin(ang) * radius);
         }
         GL11.glEnd();
     }

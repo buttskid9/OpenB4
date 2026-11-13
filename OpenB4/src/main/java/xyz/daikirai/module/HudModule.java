@@ -46,7 +46,7 @@ public class HudModule extends Module {
     public static int fontHeight;
     public static int lineHeight;
 
-    public static SliderSetting outlineSetting, scale, themeSetting, fontSetting, fontSizeSetting;
+    public static SliderSetting outlineSetting, scale, themeSetting, fontSetting, fontSizeSetting, fontStyleSetting;
     public static ButtonSetting editPosition, alignRight, alphabeticalSort, animate, drawBackground, lowercase, removeClosetModules,
             removeRenderModules, removeScripts, showModuleInfo;
 
@@ -62,6 +62,7 @@ public class HudModule extends Module {
         themeSetting = (SliderSetting) ModuleManager.setting(this, "Theme");
         fontSetting = (SliderSetting) ModuleManager.setting(this, "Font");
         fontSizeSetting = (SliderSetting) ModuleManager.setting(this, "Baloo size");
+        fontStyleSetting = (SliderSetting) ModuleManager.setting(this, "Font style");
         editPosition = (ButtonSetting) ModuleManager.setting(this, "Edit position");
         alignRight = (ButtonSetting) ModuleManager.setting(this, "Align right");
         alphabeticalSort = (ButtonSetting) ModuleManager.setting(this, "Alphabetical sort");
@@ -94,6 +95,7 @@ public class HudModule extends Module {
 
     private static void drawText(String s, float x, float y, int color) {
         if (baloo()) {
+            HudFont.style = (int) fontStyleSetting.getInput();
             HudFont.draw(s, x, y, color);
         } else if (tahoma()) {
             // keep the same line layout as the Minecraft font by centring the glyphs in it

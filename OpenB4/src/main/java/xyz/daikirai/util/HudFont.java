@@ -193,10 +193,26 @@ public final class HudFont {
         g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
-    /** Draws text with a one-pixel drop shadow. Colour codes (the section sign) are supported. */
+    /** 0 = shadow, 1 = outline, 2 = thick shadow. Set by the module before it draws. */
+    public static int style = 0;
+    private static boolean blackShade;
+
+    /** Draws text with the current style (shadow, outline or thick shadow). Colour codes are supported. */
     public static void draw(String text, float x, float y, int argb) {
         ensureBuilt();
-        pass(text, x + 1.0f, y + 1.0f, argb, true);
+        if (style == 1) {
+            blackShade = true;
+            float[][] o = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
+            for (float[] d : o) {
+                pass(text, x + d[0], y + d[1], argb, true);
+            }
+            blackShade = false;
+        } else if (style == 2) {
+            pass(text, x + 2.0f, y + 2.0f, argb, true);
+            pass(text, x + 1.0f, y + 1.0f, argb, true);
+        } else {
+            pass(text, x + 1.0f, y + 1.0f, argb, true);
+        }
         pass(text, x, y, argb, false);
         GlStateManager.disableBlend();
         GlStateManager.resetColor();
@@ -232,7 +248,7 @@ public final class HudFont {
                 continue;
             }
             int ci = clamp(c);
-            int shown = shadow ? (rgb & 0xFCFCFC) >> 2 : rgb;
+            int shown = shadow ? (blackShade ? 0 : (rgb & 0xFCFCFC) >> 2) : rgb;
             GL11.glColor4f((shown >> 16 & 0xFF) / 255.0f, (shown >> 8 & 0xFF) / 255.0f, (shown & 0xFF) / 255.0f, a);
             float u0 = (float) gx[ci] / atlasW;
             float v0 = (float) gy[ci] / atlasH;

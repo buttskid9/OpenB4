@@ -28,7 +28,7 @@ public class InfoDisplayModule extends Module {
     private static final int PURPLE = 0xFFD088FF;
     private static final float MARGIN = 6.0f;
 
-    private SliderSetting rank, font, scale;
+    private SliderSetting rank, font, scale, style;
     private ButtonSetting themeColor;
 
     public InfoDisplayModule(int key) {
@@ -39,6 +39,7 @@ public class InfoDisplayModule extends Module {
         rank = (SliderSetting) ModuleManager.setting(this, "Rank");
         font = (SliderSetting) ModuleManager.setting(this, "Font");
         scale = (SliderSetting) ModuleManager.setting(this, "Scale");
+        style = (SliderSetting) ModuleManager.setting(this, "Font style");
         themeColor = (ButtonSetting) ModuleManager.setting(this, "Theme color");
     }
 
@@ -70,6 +71,7 @@ public class InfoDisplayModule extends Module {
         boolean baloo = this.baloo();
         if (baloo) {
             HudFont.setSize(11.0f);
+            HudFont.style = (int) style.getInput();
         }
         float s = (float) scale.getInput();
         int valueColor = themeColor.isToggled() ? (0xFF000000 | HudModule.theme.getRGB(0.0)) : PURPLE;

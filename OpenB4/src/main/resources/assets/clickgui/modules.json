@@ -5087,6 +5087,22 @@
     "labels": null
    },
    {
+    "t": "mode",
+    "name": "Font style",
+    "prefix": "",
+    "suffix": "",
+    "value": 0.0,
+    "min": 0.0,
+    "max": 2.0,
+    "step": 1.0,
+    "options": [
+     "Shadow",
+     "Outline",
+     "Thick shadow"
+    ],
+    "labels": null
+   },
+   {
     "t": "button",
     "name": "Edit position",
     "value": false
@@ -5710,13 +5726,14 @@
     "suffix": "",
     "value": 0.0,
     "min": 0.0,
-    "max": 3.0,
+    "max": 4.0,
     "step": 1.0,
     "options": [
      "Box",
      "Pyramid",
      "Disc",
-     "Filled box"
+     "Filled box",
+     "Hat"
     ],
     "labels": null
    },
@@ -5729,6 +5746,18 @@
     "min": 10.0,
     "max": 100.0,
     "step": 5.0,
+    "options": null,
+    "labels": null
+   },
+   {
+    "t": "slider",
+    "name": "Hat reach",
+    "prefix": "",
+    "suffix": " blocks",
+    "value": 3.0,
+    "min": 2.0,
+    "max": 6.0,
+    "step": 0.5,
     "options": null,
     "labels": null
    },
@@ -6129,9 +6158,43 @@
     "labels": null
    },
    {
+    "t": "mode",
+    "name": "Font style",
+    "prefix": "",
+    "suffix": "",
+    "value": 0.0,
+    "min": 0.0,
+    "max": 2.0,
+    "step": 1.0,
+    "options": [
+     "Shadow",
+     "Outline",
+     "Thick shadow"
+    ],
+    "labels": null
+   },
+   {
     "t": "toggle",
     "name": "Theme color",
     "value": false
+   }
+  ]
+ },
+ {
+  "cls": "FastCraft",
+  "name": "Fast Craft",
+  "category": "other",
+  "enabled": false,
+  "noToggle": false,
+  "hidden": false,
+  "key": 0,
+  "lite": false,
+  "failed": null,
+  "settings": [
+   {
+    "t": "toggle",
+    "name": "Show names",
+    "value": true
    }
   ]
  },

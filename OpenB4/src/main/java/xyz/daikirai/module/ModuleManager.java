@@ -135,6 +135,7 @@ public final class ModuleManager {
             case "TargetHUD": return new xyz.daikirai.module.render.TargetHudModule(key);
             case "Tracers": return new xyz.daikirai.module.render.TracersModule(key);
             case "Trajectories": return new xyz.daikirai.module.render.TrajectoriesModule(key);
+            case "Fast Craft": return new xyz.daikirai.module.other.FastCraftModule(key);
             case "Info Display": return new xyz.daikirai.module.render.InfoDisplayModule(key);
             case "Xray": return new xyz.daikirai.module.render.XrayModule(key);
             case "Weather": return new xyz.daikirai.module.world.WeatherModule(key);

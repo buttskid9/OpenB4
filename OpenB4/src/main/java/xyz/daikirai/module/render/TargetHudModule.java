@@ -36,7 +36,7 @@ public class TargetHudModule extends Module {
 
     private static final int TEXT = new Color(220, 220, 220, 255).getRGB();
 
-    public static SliderSetting modeSetting, themeSetting, espModeSetting, espOpacitySetting;
+    public static SliderSetting modeSetting, themeSetting, espModeSetting, espOpacitySetting, espReachSetting;
     public static ButtonSetting editPosition, renderEsp, showDifference, showHealth, showWinLoss, traditionalHealthColor;
     public static Mode mode = Mode.Modern;
     public static Theme theme = Theme.DEFAULT;
@@ -57,6 +57,7 @@ public class TargetHudModule extends Module {
         renderEsp = (ButtonSetting) ModuleManager.setting(this, "Render ESP");
         espModeSetting = (SliderSetting) ModuleManager.setting(this, "ESP mode");
         espOpacitySetting = (SliderSetting) ModuleManager.setting(this, "ESP opacity");
+        espReachSetting = (SliderSetting) ModuleManager.setting(this, "Hat reach");
         showDifference = (ButtonSetting) ModuleManager.setting(this, "Show difference");
         showHealth = (ButtonSetting) ModuleManager.setting(this, "Show health");
         showWinLoss = (ButtonSetting) ModuleManager.setting(this, "Show win/loss");
@@ -260,7 +261,12 @@ public class TargetHudModule extends Module {
             if (espMode == 0) {
                 xyz.daikirai.util.Render3D.entityBox(entity, 2, theme.getRGB(0.0), e.partialTicks);
             } else {
-                xyz.daikirai.util.TargetEsp.draw(entity, espMode, (float) espOpacitySetting.getInput() / 100.0f, e.partialTicks);
+                int rgbOverride = -1;
+                if (espMode == xyz.daikirai.util.TargetEsp.HAT) {
+                    // Red when the target is within reach, blue when it is further away.
+                    rgbOverride = mc.thePlayer.getDistanceToEntity(entity) <= espReachSetting.getInput() ? 0xFF0000 : 0x0099FF;
+                }
+                xyz.daikirai.util.TargetEsp.draw(entity, espMode, (float) espOpacitySetting.getInput() / 100.0f, e.partialTicks, rgbOverride);
             }
         }
     }
