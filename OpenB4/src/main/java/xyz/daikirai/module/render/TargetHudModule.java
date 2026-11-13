@@ -36,7 +36,7 @@ public class TargetHudModule extends Module {
 
     private static final int TEXT = new Color(220, 220, 220, 255).getRGB();
 
-    public static SliderSetting modeSetting, themeSetting, espModeSetting, espOpacitySetting, espReachSetting;
+    public static SliderSetting modeSetting, themeSetting, espModeSetting, espOpacitySetting, espReachSetting, espThicknessSetting;
     public static ButtonSetting editPosition, renderEsp, showDifference, showHealth, showWinLoss, traditionalHealthColor;
     public static Mode mode = Mode.Modern;
     public static Theme theme = Theme.DEFAULT;
@@ -58,6 +58,7 @@ public class TargetHudModule extends Module {
         espModeSetting = (SliderSetting) ModuleManager.setting(this, "ESP mode");
         espOpacitySetting = (SliderSetting) ModuleManager.setting(this, "ESP opacity");
         espReachSetting = (SliderSetting) ModuleManager.setting(this, "Hat reach");
+        espThicknessSetting = (SliderSetting) ModuleManager.setting(this, "Rectangle thickness");
         showDifference = (ButtonSetting) ModuleManager.setting(this, "Show difference");
         showHealth = (ButtonSetting) ModuleManager.setting(this, "Show health");
         showWinLoss = (ButtonSetting) ModuleManager.setting(this, "Show win/loss");
@@ -262,9 +263,10 @@ public class TargetHudModule extends Module {
                 xyz.daikirai.util.Render3D.entityBox(entity, 2, theme.getRGB(0.0), e.partialTicks);
             } else {
                 int rgbOverride = -1;
+                xyz.daikirai.util.TargetEsp.thickness = espThicknessSetting.getInput();
                 if (espMode == xyz.daikirai.util.TargetEsp.HAT) {
                     // Red when the target is within reach, blue when it is further away.
-                    rgbOverride = mc.thePlayer.getDistanceToEntity(entity) <= espReachSetting.getInput() ? 0xFF0000 : 0x0099FF;
+                    rgbOverride = mc.thePlayer.getDistanceToEntity(entity) <= espReachSetting.getInput() ? 0xFF4422 : 0x0099FF;
                 }
                 xyz.daikirai.util.TargetEsp.draw(entity, espMode, (float) espOpacitySetting.getInput() / 100.0f, e.partialTicks, rgbOverride);
             }

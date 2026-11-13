@@ -19,9 +19,11 @@ public final class TargetEsp {
     public static final int DISC = 2;
     public static final int FILLED_BOX = 3;
     public static final int HAT = 4;
+    /** Height of the Rectangle mode in blocks; set by the module from its setting. */
+    public static volatile double thickness = 0.1;
 
     private static final int NORMAL_RGB = 0x0099FF;
-    private static final int HIT_RGB = 0xFF0000;
+    private static final int HIT_RGB = 0xFF4422;
 
     private TargetEsp() {
     }
@@ -143,17 +145,9 @@ public final class TargetEsp {
         GL11.glEnd();
     }
 
-    /** A flat horizontal square hovering above the head. Solid, no outline. */
+    /** A square slab hovering above the head: solid, no outline, with an adjustable thickness. */
     private static void hat(double cx, double cy, double cz, double radius, float r, float g, float b, float a) {
-        double hx = radius;
-        double hz = radius;
-        GL11.glColor4f(r, g, b, a);
-        GL11.glBegin(GL11.GL_QUADS);
-        GL11.glVertex3d(cx - hx, cy, cz - hz);
-        GL11.glVertex3d(cx + hx, cy, cz - hz);
-        GL11.glVertex3d(cx + hx, cy, cz + hz);
-        GL11.glVertex3d(cx - hx, cy, cz + hz);
-        GL11.glEnd();
+        box(cx - radius, cy, cz - radius, cx + radius, cy + thickness, cz + radius, r, g, b, a);
     }
 
     /** A flat, round disc hovering above the head. */

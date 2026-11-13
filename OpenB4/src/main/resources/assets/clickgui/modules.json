@@ -5762,6 +5762,18 @@
     "labels": null
    },
    {
+    "t": "slider",
+    "name": "Rectangle thickness",
+    "prefix": "",
+    "suffix": " blocks",
+    "value": 0.1,
+    "min": 0.02,
+    "max": 0.5,
+    "step": 0.02,
+    "options": null,
+    "labels": null
+   },
+   {
     "t": "toggle",
     "name": "Show difference",
     "value": false
