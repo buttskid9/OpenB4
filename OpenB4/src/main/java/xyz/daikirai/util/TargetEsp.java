@@ -77,7 +77,8 @@ public final class TargetEsp {
                 double radius = Math.max(0.3, entity.width / 1.5);
                 disc(x, y + entity.height + 0.25, z, radius, 0.1, r, g, b, a);
             } else if (mode == HAT) {
-                hat(x, y + entity.height + 0.3, z, Math.max(0.4, entity.width * 0.9), r, g, b, a);
+                // half-size 0.52 for a player: as wide as the body plus arms, with armour on
+                hat(x, y + entity.height + 0.3, z, entity.width * 0.87, r, g, b, a);
             } else if (mode == FILLED_BOX) {
                 // Wider and taller than the body so it fully wraps the player: width / 1.2 out from
                 // the centre (0.5 for a player) and 0.2 taller than the entity.
@@ -142,17 +143,16 @@ public final class TargetEsp {
         GL11.glEnd();
     }
 
-    /** A flat, wide cone (like a lampshade) hovering above the head. Solid, no outline. */
+    /** A flat horizontal square hovering above the head. Solid, no outline. */
     private static void hat(double cx, double cy, double cz, double radius, float r, float g, float b, float a) {
-        int segments = 32;
-        double apexY = cy + 0.22;
+        double hx = radius;
+        double hz = radius;
         GL11.glColor4f(r, g, b, a);
-        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-        GL11.glVertex3d(cx, apexY, cz);
-        for (int i = 0; i <= segments; i++) {
-            double ang = i * (Math.PI * 2.0 / segments);
-            GL11.glVertex3d(cx + Math.cos(ang) * radius, cy, cz + Math.sin(ang) * radius);
-        }
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex3d(cx - hx, cy, cz - hz);
+        GL11.glVertex3d(cx + hx, cy, cz - hz);
+        GL11.glVertex3d(cx + hx, cy, cz + hz);
+        GL11.glVertex3d(cx - hx, cy, cz + hz);
         GL11.glEnd();
     }
 
