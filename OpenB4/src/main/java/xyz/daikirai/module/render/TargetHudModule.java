@@ -260,7 +260,7 @@ public class TargetHudModule extends Module {
             net.minecraft.entity.Entity entity = xyz.daikirai.module.combat.KillAuraModule.target.entity;
             int espMode = (int) espModeSetting.getInput();
             if (espMode == 0) {
-                xyz.daikirai.util.Render3D.entityBox(entity, 2, theme.getRGB(0.0), e.partialTicks);
+                xyz.daikirai.util.TargetEsp.originalBox(entity, theme.getRGB(0.0) & 0xFFFFFF, (float) espOpacitySetting.getInput() / 100.0f, e.partialTicks);
             } else {
                 int rgbOverride = -1;
                 xyz.daikirai.util.TargetEsp.thickness = espThicknessSetting.getInput();

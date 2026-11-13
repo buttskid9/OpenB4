@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -93,6 +94,45 @@ public final class TargetEsp {
             set(2848, smooth);
             set(2884, cull);
             set(2896, lighting);
+            set(3553, texture);
+            set(2929, depth);
+            set(3042, blend);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            GlStateManager.resetColor();
+        }
+    }
+
+    /**
+     * Raven's original filled box (the entity's own bounding box, grown a little, drawn through
+     * walls) with an adjustable opacity. rgb is 0xRRGGBB, opacity is 0 to 1.
+     */
+    public static void originalBox(Entity entity, int rgb, float opacity, float partialTicks) {
+        if (!(entity instanceof EntityLivingBase)) {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        RenderManager rm = mc.getRenderManager();
+        double dx = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - rm.viewerPosX;
+        double dy = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - rm.viewerPosY;
+        double dz = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - rm.viewerPosZ;
+        AxisAlignedBB bb = entity.getEntityBoundingBox().expand(0.1, 0.1, 0.1);
+        AxisAlignedBB shifted = new AxisAlignedBB(bb.minX - entity.posX + dx, bb.minY - entity.posY + dy, bb.minZ - entity.posZ + dz,
+                bb.maxX - entity.posX + dx, bb.maxY - entity.posY + dy, bb.maxZ - entity.posZ + dz);
+        float a = Math.max(0.02f, Math.min(1.0f, opacity));
+
+        boolean blend = GL11.glIsEnabled(3042);
+        boolean depth = GL11.glIsEnabled(2929);
+        boolean texture = GL11.glIsEnabled(3553);
+        boolean depthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
+        try {
+            GL11.glEnable(3042);
+            GL11.glBlendFunc(770, 771);
+            GL11.glDisable(3553);
+            GL11.glDisable(2929);
+            GL11.glDepthMask(false);
+            Render3D.filledBox(shifted, (rgb >> 16 & 0xFF) / 255.0f, (rgb >> 8 & 0xFF) / 255.0f, (rgb & 0xFF) / 255.0f, a);
+        } finally {
+            GL11.glDepthMask(depthMask);
             set(3553, texture);
             set(2929, depth);
             set(3042, blend);
