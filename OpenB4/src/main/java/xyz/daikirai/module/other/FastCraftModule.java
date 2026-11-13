@@ -164,7 +164,7 @@ public class FastCraftModule extends Module {
             boolean hover = e.mouseX >= x && e.mouseX < x + PANEL_W && e.mouseY >= ry && e.mouseY < ry + ROW_H;
             Gui.drawRect(x + 2, ry, x + PANEL_W - 2, ry + ROW_H - 1, hover ? 0x80B070FF : 0x40FFFFFF);
             RenderHelper.enableGUIStandardItemLighting();
-            mc.getRenderItem().renderItemAndEffectInto(en.stack, x + 3, ry + 1);
+            mc.getRenderItem().renderItemAndEffectIntoGUI(en.stack, x + 3, ry + 1);
             RenderHelper.disableStandardItemLighting();
             if (this.showNames.isToggled()) {
                 mc.fontRendererObj.drawStringWithShadow(en.label, x + 23, ry + 5, 0xFFFFFFFF);
